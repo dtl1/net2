@@ -15,15 +15,59 @@ care!
 </small>
 
 <p>
-Now it is - 2020-11-07 15-20-03.<br />
+<?php
+$now = date("Y-m-d H-i-s");
+$today = date("Y-m-d");
+echo "Now it is - " . $now . ".<br />\n";
+?>
 </p>
 
+<?php
+// today's messages
+$messages = array();
+$todayDir = "./" . $today;
+if (is_dir($todayDir))
+{
+  $dir = new DirectoryIterator("./" . $todayDir);
+  foreach($dir as $f)
+  {
+    if (!$f->isDot() && !$f->isDir())
+    { array_push($messages, $f->getFilename()); }
+  }
+  rsort($messages, SORT_STRING);
+}
+// all the days for which messages are available
+$availableDays = array();
+$dir = new DirectoryIterator("./");
+foreach($dir as $f)
+{
+  if (!$f->isDot() && $f->isDir())
+    { array_push($availableDays, $f->getFilename()); }
+}
+rsort($availableDays, SORT_STRING);
+?>
 
 <table border="1" width="600">
-<em style='color: red';>No messages for today, yet.</em><br /></table>
+<?php
+$lines = 0;
+foreach ($messages as $f)
+{
+  // filename is the timestamp of creation of the message
+  echo "<tr><td><em style='color: blue';>" . $f . "</em><br />";
+  include($today . "/" . $f);
+  echo "</td><tr>\n";
+  $lines += 1;
+}
+if ($lines == 0)
+  { echo "<em style='color: red';>No messages for today, yet.</em><br />"; }
+?>
+</table>
 
 <p>
-Total number of Messages today is 0.</p>
+<?php
+echo "Total number of Messages today is " . sizeof($messages) . ".";
+?>
+</p>
 
 <br />
 <hr />
@@ -33,9 +77,14 @@ Days for which messages have been recorded are listed below.
 </p>
 
 <table border="0" width="200">
-<tr><td><em style='color: green';>figures</em><br /></td><tr>
-<tr><td><em style='color: green';>2020-09-24</em><br /></td><tr>
-<tr><td><em style='color: green';>2020-09-20</em><br /></td><tr>
+<?php
+foreach ($availableDays as $d)
+{
+  // dirname is the datestamp for creation of the message dir
+  echo "<tr><td><em style='color: green';>" . $d . "</em><br />";
+  echo "</td><tr>\n";
+}
+?>
 </table>
 
 <br />
